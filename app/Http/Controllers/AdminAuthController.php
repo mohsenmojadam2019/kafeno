@@ -1,0 +1,4 @@
+<?php
+namespace App\Http\Controllers;
+use Illuminate\Http\Request; use Illuminate\Support\Facades\DB; use Illuminate\Support\Facades\Hash;
+class AdminAuthController extends Controller { public function showLogin(){return view('admin.login');} public function login(Request $request){$data=$request->validate(['email'=>'required|email','password'=>'required']);$user=DB::table('users')->where('email',$data['email'])->where('is_admin',true)->first();if(!$user||!Hash::check($data['password'],$user->password))return back()->withErrors(['email'=>'اطلاعات ورود صحیح نیست.'])->withInput();$request->session()->put('kafeno_admin_id',$user->id);$request->session()->regenerate();return redirect()->route('admin');}public function logout(Request $request){$request->session()->forget('kafeno_admin_id');$request->session()->invalidate();$request->session()->regenerateToken();return redirect()->route('admin.login');}}
